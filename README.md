@@ -1,222 +1,121 @@
-# 紫微斗数 · 开源排盘引擎
+# 紫微斗数 AI 单宫解读
 
-> 🎉 **网站已完成 ICP 备案**（京 ICP 备 2026027116 号），主域名已正式上线、全部功能正常访问。
->
-> 直接访问主域名 **https://wdyziweidoushu666.com** 即可，排盘 / AI 解读 / 命盘历史等全部功能均已开放。
->
-> 💕 **发财的小手点一下，小红书 / 抖音 / 闲鱼 / X 关注：王多鱼AI**，第一时间看上线 + 解锁更多紫微干货～
+一个基于 Next.js、TypeScript 和 DeepSeek 的紫微斗数学习工具。用户完成排盘后，可以点击十二宫中的任意宫位，查看结构化命盘信息，并生成结合当前命盘与项目内知识库的 AI 单宫分析。
 
-基于**倪海夏《天纪》**教学体系的紫微斗数排盘系统，包含完整排盘算法、四化系统、格局知识库、古籍原文数据，以及 **51.8 万条命盘样本数据**。
+本项目是在开源项目 [Renhuai123/ziwei-doushu](https://github.com/Renhuai123/ziwei-doushu) 基础上的个人二次开发版本。新增内容包括 AI 单宫解读、知识检索组合、服务端缓存与限流、宫位详情交互和公网部署配置。
 
-线上体验：[wdyziweidoushu666.com](https://wdyziweidoushu666.com)
+## 在线体验
 
----
+- 排盘与 AI 解读：https://ziwei-doushu-main-sigma.vercel.app/chart
+- 数据来源说明：https://ziwei-doushu-main-sigma.vercel.app/data-source
 
-## 51.8 万命盘样本数据
+当前线上版本是免费公开演示版，不包含会员、付费解锁或模拟支付入口。
 
-> **下载位置：本仓库右侧 [Releases](https://github.com/Renhuai123/ziwei-doushu/releases/tag/v3.0-samples) 页面**
+## 主要功能
 
-我们开源了一套完整的紫微斗数命盘样本数据集，覆盖 **51.8 万种排盘组合**（年 60 × 月 12 × 日 30 × 时 12 × 性别 2），每条样本包含完整的命盘结构和基于倪海夏体系的解读文本。
+- 免费完成紫微斗数排盘
+- 十二宫均可点击并查看结构化详情
+- 展示本宫、对宫、三方与三方四正信息
+- 提取全盘摘要与已识别格局
+- 从项目已有资料中检索星曜、四化、格局、《天纪》及古籍内容
+- 使用自己的 DeepSeek API 生成单宫分析
+- 相同 `chartHash + palaceName` 优先读取 Redis 缓存
+- 公网演示版按 IP 限制 AI 调用次数
+- 支持亮色和深色主题
+- 保留数据来源、免责声明及独立的数据来源页面
 
-### 数据规格
+## AI 分析原则
 
-| 项目 | 说明 |
-|------|------|
-| 样本数量 | **518,400 条** |
-| 总大小 | 5.5 GB（分 3 卷压缩） |
-| 体系 | 倪海夏《天纪》正统（纯飞星派已下线） |
-| 内容 | 命盘 JSON + 13 主题解读文本（命格总览、财运、事业、感情、健康等） |
-| 验证 | 男女命差异化 100%、健康含子午流注 100%、女命含妇科保养 100% |
-| 口径 | 与线上 [wdyziweidoushu666.com](https://wdyziweidoushu666.com) 完全一致 |
+AI 请求由服务端组合以下上下文：
 
-### 下载方式
+1. 当前宫位数据
+2. 对宫与三方四正数据
+3. 全盘摘要
+4. 项目知识库检索结果
 
-前往 [Releases](https://github.com/Renhuai123/ziwei-doushu/releases/tag/v3.0-samples) 下载以下文件：
+输出被要求只基于传入资料进行分析，不编造星曜、宫位或四化，不使用绝对化断语，并以“倾向”“可能”“可观察”等方式表达。内容不构成医学、法律、投资、婚恋或人生重大决策建议。
 
-```
-ziwei-samples-v3-part1.zip.001  (1.9 GB)
-ziwei-samples-v3-part2.zip.002  (1.9 GB)
-ziwei-samples-v3-part3.zip.003  (1.8 GB)
-SHA256SUMS.txt                  (校验文件)
-```
-
-下载后合并解压：
-
-```bash
-# macOS / Linux
-cat ziwei-samples-v3-part*.zip.* > combined.zip
-unzip combined.zip
-
-# Windows (PowerShell)
-Get-Content ziwei-samples-v3-part*.zip.* -Encoding Byte -ReadCount 0 | Set-Content combined.zip -Encoding Byte
-Expand-Archive combined.zip
-```
-
-### 用途
-
-- 微调小模型的训练语料（51.8 万 input-output 配对）
-- AI 对话的 RAG 检索源
-- 修改 `patterns.ts` 后做 A/B 基线对比
-- 紫微斗数研究与数据分析
-
-### 数据许可与引用
-
-📂 **完全开源 · 可自由商用** —— 你可以在任何项目里使用这套数据，包括但不限于：
-
-- 商业产品 / SaaS / 付费应用
-- AI 模型微调（开源或闭源模型均可）
-- 二次开发、再分发、衍生数据集
-- 学术研究、技术博客、教学课程
-
-无需付费、无需申请、无需事先告知。
-
-**唯一的要求是保留数据来源标注（attribution）**：
-
-> 本项目使用了 **紫微斗数开源样本数据集 v3.0**（518,400 条）
-> 来源：https://github.com/Renhuai123/ziwei-doushu
-> 作者：王多鱼AI
-
-放在哪里都行：
-
-- **网页 / 产品**：About 页 / 关于我们 / 数据来源 / 页脚，写一行链接即可
-- **AI 模型**：模型卡（Model Card）或数据集卡（Dataset Card）的 "Training Data" 字段
-- **学术论文**：参考文献或致谢章节
-- **二次发布的数据集**：README 或 metadata 文件里注明上游来源
-
-仅此一条，其余都自由。希望这套数据能帮你做出好东西 —— 做出来记得来小红书 / 抖音 / 闲鱼 **@王多鱼AI** 打个招呼 👋
-
----
-
-## 开源内容
-
-### 排盘算法（`lib/ziwei/`）
-
-| 文件 | 说明 |
-|------|------|
-| `algorithm.ts` | 完整排盘流程：安命宫、定五行局、安十四主星、安辅星、排大限流年 |
-| `constants.ts` | 天干地支、十四主星、辅星常量 |
-| `sihua.ts` | 四化飞星系统（禄权科忌），含各天干四化对照表 |
-| `patterns.ts` | **1100+ 行格局知识库**：紫府同宫、日月并明、七杀朝斗等经典格局判定规则 |
-| `heming-knowledge.ts` | 合盘方法论：倪师体系下双盘比对逻辑 |
-| `types.ts` | TypeScript 类型定义 |
-| `cities.ts` | 中国城市经纬度，用于真太阳时校正 |
-| `famous.ts` | 历史名人命盘示例数据 |
-
-### 古籍原文（`lib/classics/`）
-
-- **骨髓赋**（`gusuifu.ts`）— 紫微斗数核心歌诀
-- **紫微斗数全集**（`quanji.ts`）— 清代古本
-- **紫微斗数全书**（`quanshu.ts`）— 陈希夷传本
-
-### 前端界面（`app/` + `components/`）
-
-完整的 Next.js 14 前端，包含：
-
-- 排盘工作台（命盘方格、宫位详情、星曜面板）
-- 合盘分析页
-- 古籍阅读器（全文搜索）
-- 命理百科（14 主星 + 12 宫位知识页）
-- 亮色/暗色主题切换
-- 移动端适配
-
-### SEO 知识图谱（`lib/seo/`）
-
-14 主星 × 12 宫位的结构化知识数据，可用于内容生成或知识库构建。
-
----
-
-## 未包含的部分
-
-以下属于平台运营层，不在开源范围内：
-
-- **AI 解读 prompt**：基于倪海夏体系调教的命盘解读提示词
-- **后端 API**：`/api/interpret`、`/api/heming`、`/api/generate` 等路由实现
-- **用户系统**：登录、短信验证、会员、支付
-- **服务端安全**：签名校验、防刷、水印
-- **部署配置**：Vercel/Nginx/Docker/数据库
-
-如果你需要 AI 解读能力，可以参考 `lib/ziwei/patterns.ts` 和 `heming-knowledge.ts` 中的知识库，结合任意 LLM 自行构建 prompt。
-
----
-
-## 快速开始
-
-```bash
-# 克隆
-git clone https://github.com/Renhuai123/ziwei-doushu.git
-cd ziwei-doushu
-
-# 安装依赖
-npm install
-
-# 配置环境变量
-cp .env.example .env.local
-# 编辑 .env.local，填入你的 AI API Key
-
-# 启动开发服务器
-npm run dev
-```
-
-> 注意：开源版不含后端 API 路由，AI 解读功能需要你自行实现 `/api/interpret` 等接口。排盘算法和前端界面可独立运行。
-
----
+本项目不调用上游作者的线上付费 API，不使用其未开源 prompt，也不包含或破解其会员、支付与用户系统。
 
 ## 技术栈
 
-- **框架**：Next.js 14（App Router）
-- **语言**：TypeScript
-- **样式**：Tailwind CSS + CSS Variables 设计系统
-- **排盘**：基于 [iztro](https://github.com/SylarLong/iztro) + lunar-javascript
-- **动画**：Framer Motion
+- Next.js 15 App Router
+- React 19
+- TypeScript
+- Prisma + SQLite（本地开发）
+- Upstash Redis（生产缓存与限流）
+- DeepSeek OpenAI-compatible Chat Completions API
+- Tailwind CSS / CSS Variables
+- iztro 与 lunar-javascript
+- Vercel
 
----
+## 项目结构
 
-## 项目理念
+```text
+app/
+  api/ai/palace-analysis/   AI 单宫分析接口
+  api/ai/status/            服务端配置状态接口
+  chart/                    排盘页面
+  data-source/              数据来源说明
+components/
+  BirthForm.tsx             出生信息表单
+  ChartBoard.tsx            十二宫命盘
+  PalaceDetailPanel.tsx     宫位详情与 AI 分析
+lib/
+  ai/                       AI 缓存、限流与服务端逻辑
+  classics/                 古籍资料
+  nihai/                    《天纪》相关资料
+  ziwei/                    排盘、四化、格局与类型
+  palace-context.ts         三方四正与全盘上下文提取
+  knowledge-retrieval.ts    紫微知识检索
+prisma/                     本地数据模型
+```
 
-紫微斗数是中国传统命理学的瑰宝，倪海夏老师在《天纪》中系统梳理了正宗的紫微斗数体系。我们希望通过技术手段让更多人接触和学习这门学问。
+## 本地运行
 
-开源排盘算法和知识库，是因为我们相信：**算法是公开的传统智慧，不应该被锁在围墙里**。真正的价值在于解读的深度、用户体验的打磨、以及持续运营的积累。
+要求 Node.js 20 或更高版本。
 
-想自己搭？代码都在这里，拿去用。嫌麻烦？来 [wdyziweidoushu666.com](https://wdyziweidoushu666.com) 直接用。
+```bash
+git clone https://github.com/huixinyue92-del/ziwei-doushu-main.git
+cd ziwei-doushu-main
+npm install
+```
 
----
+复制环境变量模板：
 
-## 协议
+```bash
+cp .env.example .env.local
+```
 
-本仓库分三部分授权，都是宽松协议，**商用没有任何限制**：
+Windows PowerShell：
 
-| 内容 | 协议 | 简单说 |
-|------|------|--------|
-| **代码**（`lib/`、`app/`、`components/`） | [MIT License](./LICENSE) | 拿去随便用，保留 LICENSE 文件即可 |
-| **数据**（Releases 中的 51.8 万样本数据集 v3.0） | 自由使用 · 要求 attribution | 商用也行，**注明数据来源即可**，详见上文 [数据许可与引用](#数据许可与引用) |
-| **古籍原文**（骨髓赋、紫微斗数全集 / 全书等） | Public Domain | 古书都是公有领域，不存在版权 |
+```powershell
+Copy-Item .env.example .env.local
+```
 
-**一句话**：拿去用，商用也行，把数据来源链接带上就行。
+编辑 `.env.local`：
 
----
+```env
+AI_BASE_URL=https://api.deepseek.com
+AI_API_KEY=你的-DeepSeek-API-Key
+AI_MODEL=deepseek-chat
+DATABASE_URL=file:./dev.db
+ENABLE_PAYMENT=false
+ENABLE_MOCK_PAYMENT=false
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
 
-## 联系
+启动开发服务器：
 
-- 线上平台：[wdyziweidoushu666.com](https://wdyziweidoushu666.com)
-- Issues：欢迎提 Bug 和建议
+```bash
+npm run dev
+```
 
----
+访问 http://localhost:3000/chart。
 
-## 数据来源与致谢
+## 生产部署
 
-本项目使用了紫微斗数开源样本数据集 v3.0（518,400 条），来源：https://github.com/Renhuai123/ziwei-doushu，作者：王多鱼AI。
-
-本项目是在 `Renhuai123/ziwei-doushu` 开源项目基础上进行的二次开发。使用的 `lib/`、`app/`、`components/` 代码遵循 MIT License，本仓库保留原项目 `LICENSE` 文件和来源信息；古籍原文属于 Public Domain。
-
-本项目新增了个人自研的 AI 单宫解读、知识库检索组合、按命盘付费解锁、交互体验和产品化功能。不复制或调用原作者未开源的 AI prompt、后端 API、用户系统、会员、支付、安全校验或部署配置，也不声称开源数据、古籍与排盘算法完全由本项目原创。
-
----
-
-## 公网免费演示版配置
-
-生产环境默认关闭支付与模拟支付，仅提供限量免费 AI 单宫解读：每个 IP 每小时最多 2 次、每天最多 3 次。相同 `chartHash + palaceName` 优先读取缓存，不重复调用 AI。
-
-Vercel 环境变量：
+推荐部署到 Vercel，并在项目后台配置以下环境变量：
 
 ```env
 AI_BASE_URL=https://api.deepseek.com
@@ -224,9 +123,54 @@ AI_API_KEY=你的服务端密钥
 AI_MODEL=deepseek-chat
 ENABLE_PAYMENT=false
 ENABLE_MOCK_PAYMENT=false
-UPSTASH_REDIS_REST_URL=你的-Upstash-REST-URL
-UPSTASH_REDIS_REST_TOKEN=你的-Upstash-REST-Token
 NEXT_PUBLIC_SITE_URL=https://你的域名
 ```
 
-`AI_API_KEY` 与 `UPSTASH_REDIS_REST_TOKEN` 只能配置在 Vercel 服务端环境变量中，不要添加 `NEXT_PUBLIC_` 前缀，也不要提交 `.env.local`。
+生产环境还需要 Upstash Redis。项目同时兼容手动配置的旧变量名：
+
+```env
+UPSTASH_REDIS_REST_URL=你的-Upstash-REST-URL
+UPSTASH_REDIS_REST_TOKEN=你的-Upstash-REST-Token
+```
+
+以及 Vercel Marketplace 使用 `UPSTASH_REDIS_REST` 前缀自动生成的新变量名：
+
+```env
+UPSTASH_REDIS_REST_KV_REST_API_URL=自动生成
+UPSTASH_REDIS_REST_KV_REST_API_TOKEN=自动生成
+```
+
+环境变量更新后需要重新部署才能生效。
+
+## 免费演示限制
+
+- 每个 IP 每小时最多生成 2 次 AI 解读
+- 每个 IP 每天最多生成 3 次 AI 解读
+- 已生成的相同命盘与宫位优先读取缓存，不重复调用 DeepSeek
+- 生产环境关闭支付与模拟支付接口
+
+这些限制只用于控制公开演示的 API 成本，不影响免费排盘和十二宫结构化信息浏览。
+
+## 安全说明
+
+- `AI_API_KEY` 仅由服务端通过 `process.env.AI_API_KEY` 读取
+- 不使用 `NEXT_PUBLIC_AI_API_KEY`
+- `.env.local`、`.vercel`、本地数据库、`.next` 和 `node_modules` 均不会提交到 Git
+- 客户端只通过 `/api/ai/status` 获取“是否已配置”，不会获得密钥内容
+- 公网缓存和限流状态保存在服务端 Redis，不依赖浏览器 localStorage
+
+## 数据来源与致谢
+
+本项目使用了紫微斗数开源样本数据集 v3.0（518,400 条），来源：https://github.com/Renhuai123/ziwei-doushu，作者：王多鱼AI。
+
+排盘算法、四化系统、格局知识、部分星曜资料和界面代码来自上游开源项目 `Renhuai123/ziwei-doushu`，相关代码遵循 MIT License；本仓库保留原项目 `LICENSE` 文件及来源说明。骨髓赋、紫微斗数全集、紫微斗数全书等古籍原文属于 Public Domain。
+
+本项目不声称上述开源代码、数据、古籍或传统排盘算法由本项目原创。个人二次开发部分主要是 AI 单宫解读流程、知识检索组合、缓存限流、交互优化和公网演示部署。
+
+## License
+
+代码使用遵循仓库中的 [MIT License](./LICENSE)。上游数据集的使用需保留上述 attribution；古籍原文按 Public Domain 使用。
+
+## 免责声明
+
+本工具仅供传统文化学习、娱乐和自我观察参考，不构成医学、法律、投资、婚恋或人生重大决策建议。AI 解读可能存在偏差，请理性参考。
