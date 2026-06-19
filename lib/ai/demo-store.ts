@@ -1,4 +1,4 @@
-import { hasPublicCacheStore } from '@/lib/runtime/features';
+import { getPublicCacheStoreConfig, hasPublicCacheStore } from '@/lib/runtime/features';
 
 interface CachedAnalysis {
   content: string;
@@ -24,9 +24,7 @@ const localCounters = globalForDemo.demoRateCounters ?? new Map();
 if (process.env.NODE_ENV !== 'production') globalForDemo.demoRateCounters = localCounters;
 
 function redisConfig() {
-  const url = process.env.UPSTASH_REDIS_REST_URL?.replace(/\/+$/, '');
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  return url && token ? { url, token } : null;
+  return getPublicCacheStoreConfig();
 }
 
 async function redisCommand<T>(command: Array<string | number>): Promise<T> {
