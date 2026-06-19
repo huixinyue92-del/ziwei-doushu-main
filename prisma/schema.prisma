@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Entitlement {
+  id               String   @id @default(cuid())
+  chartHash        String   @unique
+  status           String   @default("FULL_CHART_UNLOCKED")
+  source           String   @default("MOCK_PAYMENT")
+  paymentReference String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model CheckoutSession {
+  id        String    @id @default(cuid())
+  chartHash String
+  amount    Int       @default(500)
+  currency  String    @default("CNY")
+  status    String    @default("PENDING")
+  createdAt DateTime  @default(now())
+  paidAt   DateTime?
+
+  @@index([chartHash])
+}
+
+model PalaceAnalysis {
+  id         String   @id @default(cuid())
+  chartHash  String
+  palaceName String
+  content    String
+  model      String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([chartHash, palaceName])
+}
